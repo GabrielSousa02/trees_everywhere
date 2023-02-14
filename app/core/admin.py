@@ -24,7 +24,7 @@ class UserAdmin(BaseUserAdmin):
                 )
             }
         ),
-        (_('Important dates'), {'fields': ('last_login',)}),
+        (_('Last session'), {'fields': ('last_login',)}),
     )
     readonly_fields = ['last_login']
     add_fieldsets = (
@@ -43,4 +43,18 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    """Define the admin page for profiles."""
+    ordering = ['user']
+    list_display = ['user', 'user_joined']
+    fieldsets = (
+        [None, {'fields': ('user_about',)}],
+    )
+    readonly_fields = ['user_joined']
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Profile, ProfileAdmin)
