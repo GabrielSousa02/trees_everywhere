@@ -10,7 +10,10 @@ class Account(models.Model):
     name = models.CharField(max_length=255, unique=True)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
-    members = models.ManyToManyField('core.user')
+    members = models.ManyToManyField('core.user', blank=True)
+
+    def __str__(self):
+        return self.name
 
     def add_member(self, user):
         """Adds specific User to the Account"""
@@ -25,3 +28,17 @@ class Account(models.Model):
         self.save()
         # Return the status and the added User
         return True, user_to_add
+
+    def remove_member(self, user):
+        """Adds specific User to the Account"""
+        # Query the DB to find the User
+        user_to_remove = User.objects.get(email=user.email)
+        # Check if query had no problem
+        if not user_to_remove:
+            return False, IntegrityError
+        # Add the User to the members field
+        self.members.add(user_to_remove.id)
+        # Save the new state of the Account
+        self.save()
+        # Return the status and the added User
+        return True, user_to_remove
