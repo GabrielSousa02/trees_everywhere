@@ -15,7 +15,8 @@ class ModelTests(TestCase):
         self.user = get_user_model().objects.create_user(
             email='user@example.com',
             password='testpass123',
-            name='Test User'
+            name='Test User',
+            user_about='User'
         )
 
     def test_create_account_successful(self):
@@ -42,7 +43,7 @@ class ModelTests(TestCase):
         self.assertEqual(account.name, name)
         self.assertEqual(account.is_active, is_active)
 
-    def test_add_users_to_account(self):
+    def test_add_user_to_account(self):
         """Test adding users to Account."""
         name = "Account 02"
         account = Account.objects.create(
@@ -52,3 +53,15 @@ class ModelTests(TestCase):
 
         self.assertTrue(result[0], True)
         self.assertEqual(result[1].email, 'user@example.com')
+
+    def test_remove_user_from_account(self):
+        """Test adding users to Account."""
+        name = "Account 02"
+        account = Account.objects.create(
+            name=name,
+        )
+        account.members.set([self.user])
+
+        result = account.remove_member(self.user)
+
+        self.assertTrue(result[0], True)
