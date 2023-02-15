@@ -2,6 +2,7 @@ from django.db import models
 
 
 class PlantedTree(models.Model):
+    """Planted Tree for a Tree type."""
     age = models.IntegerField()
     planted_at = models.DateTimeField()
     user = models.ForeignKey(
@@ -20,8 +21,12 @@ class PlantedTree(models.Model):
         related_name='planted_trees',
     )
 
+    def __str__(self):
+        return f'Tree planted by {self.user}'
+
 
 class Location(models.Model):
+    """Location in Coordinates of a PlantedTree."""
     planted_tree = models.OneToOneField(
         'plantedtree',
         primary_key=True,
@@ -32,5 +37,9 @@ class Location(models.Model):
 
 
 class Tree(models.Model):
+    """Tree type."""
     name = models.CharField(max_length=255, unique=True)
     scientific_name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
