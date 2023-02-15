@@ -84,9 +84,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         tree_latitude = tree[0][1][0]
         tree_longitude = tree[0][1][1]
         # Query the DB to locate the Tree
-        tree = Tree.objects.get(name=tree_name)
-        if not tree:
-            return False, IntegrityError
+        try:
+            tree = Tree.objects.get(name=tree_name)
+        except ObjectDoesNotExist:
+            return (False, ObjectDoesNotExist)
         # Create the PlantedTree object
         new_planted_tree = PlantedTree.objects.create(
             age=0,
