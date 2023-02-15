@@ -4,19 +4,21 @@ from django.db import models
 class PlantedTree(models.Model):
     age = models.IntegerField()
     planted_at = models.DateTimeField()
-    user = models.ForeignKey('core.user', on_delete=models.CASCADE)
-    account = models.ForeignKey('account.account', on_delete=models.CASCADE)
-    tree = models.ForeignKey('tree', on_delete=models.RESTRICT)
-
-    def save(self, *args, **kwargs):
-        latitude = kwargs.pop('latitude')
-        longitude = kwargs.pop('longitude')
-        super().save(*args, **kwargs)
-        new_location = Location.objects.create(
-            latitude=latitude,
-            longitude=longitude,
-        )
-        new_location.save(planted_tree=self)
+    user = models.ForeignKey(
+        'core.user',
+        on_delete=models.CASCADE,
+        related_name='user_trees'
+    )
+    account = models.ManyToManyField(
+        'account.account',
+        blank=True,
+        related_name='account_trees',
+    )
+    tree = models.ForeignKey(
+        'tree',
+        on_delete=models.RESTRICT,
+        related_name='planted_trees',
+    )
 
 
 class Location(models.Model):
