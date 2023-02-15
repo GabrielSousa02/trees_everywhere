@@ -26,8 +26,16 @@ class Account(models.Model):
         # Check if query had no problem
         if not user_to_add:
             return False, IntegrityError
+        # Find all planted trees part of the account
+        user_trees = [tree for tree in user_to_add.user_trees.all()]
+        # Find all planted trees part of the account
+        account_trees = [tree for tree in self.account_trees.all()]
+        # Extend the lists
+        account_trees.extend(user_trees)
         # Add the User to the members field
         self.members.add(user_to_add.id)
+        # Add the User PlantedTrees to the account_trees field
+        self.account_trees.set(account_trees)
         # Save the new state of the Account
         self.save()
         # Return the status and the added User
