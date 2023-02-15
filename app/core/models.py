@@ -1,12 +1,18 @@
 """
 Database models.
 """
+from typing import List
+from datetime import datetime
+
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin,
 )
+
+from tree.models import Tree, PlantedTree, Location
 
 
 class UserManager(BaseUserManager):
@@ -69,3 +75,80 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def plant_tree(self, tree: List[tuple]):
+        """Create a PlantedTree record."""
+        # Extract the name of the Tree
+        tree_name = tree[0][0]
+        # Extract location data
+        tree_latitude = tree[0][1][0]
+        tree_longitude = tree[0][1][1]
+        # Query the DB to locate the Tree
+        try:
+            tree = Tree.objects.get(name=tree_name)
+        except ObjectDoesNotExist:
+            return (False, ObjectDoesNotExist)
+        # Create the PlantedTree object
+        new_planted_tree = PlantedTree.objects.create(
+            age=0,
+            planted_at=datetime.utcnow(),
+            user=self,
+            tree=tree,
+        )
+        # Save the PlantedTree to the DB
+        new_planted_tree.save()
+        # Add all accounts to the PlantedTree object
+        new_planted_tree.account.set(self.accounts.all())
+        # Create the location object
+        new_location = Location.objects.create(
+            planted_tree=new_planted_tree,
+            latitude=tree_latitude,
+            longitude=tree_longitude,
+        )
+        new_location.save()
+        # Assign the location to the PlantedTree
+        new_planted_tree.location = new_location
+        new_planted_tree.save()
+
+        return True, new_planted_tree
+
+    def plant_trees(self, trees: List[tuple]):
+        """Create multiple PlantedTree records."""
+        planted_tree_return_status = []
+        for tree in trees:
+            # Extract the name of the Tree
+            tree_name = tree[0]
+            # Extract location data
+            tree_latitude = tree[1][0]
+            tree_longitude = tree[1][1]
+            # Query the DB to locate the Tree
+            try:
+                tree = Tree.objects.get(name=tree_name)
+            except ObjectDoesNotExist:
+                planted_tree_return_status.append((False, ObjectDoesNotExist))
+                continue
+            # Create the PlantedTree object
+            new_planted_tree = PlantedTree.objects.create(
+                age=0,
+                planted_at=datetime.utcnow(),
+                user=self,
+                tree=tree,
+            )
+            # Save the PlantedTree to the DB
+            new_planted_tree.save()
+            # Add all accounts to the PlantedTree object
+            new_planted_tree.account.set(self.accounts.all())
+            # Create the location object
+            new_location = Location.objects.create(
+                planted_tree=new_planted_tree,
+                latitude=tree_latitude,
+                longitude=tree_longitude,
+            )
+            new_location.save()
+            # Assign the location to the PlantedTree
+            new_planted_tree.location = new_location
+            new_planted_tree.save()
+            # Add the new PlantedTree to the return list of Trees
+            planted_tree_return_status.append((True, new_planted_tree))
+
+        return planted_tree_return_status
