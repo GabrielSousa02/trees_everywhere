@@ -3,6 +3,7 @@ Test for Tree models.
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 from tree.models import Tree
 from account.models import Account
@@ -42,10 +43,62 @@ class ModelTests(TestCase):
 
     def test_successful_planted_tree(self):
         """Test successful PlantedTree."""
-        tree_for_planting = [('Oak Tree', (-27.609895, -48.531859))]
+        tree_for_planting = [('Oak Tree', (40.744801, -111.875066))]
         result = self.user.plant_tree(tree=tree_for_planting)
 
         self.assertTrue(result[0])
         self.assertEqual(result[1].tree.name, 'Oak Tree')
-        self.assertEqual(result[1].location.latitude, -27.609895)
-        self.assertEqual(result[1].location.longitude, -48.531859)
+        self.assertEqual(result[1].location.latitude, 40.744801)
+        self.assertEqual(result[1].location.longitude, -111.875066)
+
+    def test_successful_multiple_planted_trees(self):
+        """Test successful multiple PlantedTree."""
+        trees_for_planting = [
+            ('Oak Tree', (40.744801, -111.875066)),
+            ('Oak Tree', (33.589472, -117.813085)),
+            ('Oak Tree', (37.577240, 126.977022)),
+        ]
+        result = self.user.plant_trees(trees=trees_for_planting)
+
+        # Checking first tree planted
+        self.assertTrue(result[0][0])
+        self.assertEqual(result[0][1].tree.name, 'Oak Tree')
+        self.assertEqual(result[0][1].location.latitude, 40.744801)
+        self.assertEqual(result[0][1].location.longitude, -111.875066)
+
+        # Checking second tree planted
+        self.assertTrue(result[1][0])
+        self.assertEqual(result[1][1].tree.name, 'Oak Tree')
+        self.assertEqual(result[1][1].location.latitude, 33.589472)
+        self.assertEqual(result[1][1].location.longitude, -117.813085)
+
+        # Checking third tree planted
+        self.assertTrue(result[2][0])
+        self.assertEqual(result[2][1].tree.name, 'Oak Tree')
+        self.assertEqual(result[2][1].location.latitude, 37.577240)
+        self.assertEqual(result[2][1].location.longitude, 126.977022)
+
+    def test_partial_success_multiple_planted_trees(self):
+        """Test partial success multiple PlantedTree."""
+        trees_for_planting = [
+            ('Oak Tree', (40.744801, -111.875066)),
+            ('No Tree', (33.589472, -117.813085)),
+            ('Oak Tree', (37.577240, 126.977022)),
+        ]
+        result = self.user.plant_trees(trees=trees_for_planting)
+
+        # Checking first tree planted
+        self.assertTrue(result[0][0])
+        self.assertEqual(result[0][1].tree.name, 'Oak Tree')
+        self.assertEqual(result[0][1].location.latitude, 40.744801)
+        self.assertEqual(result[0][1].location.longitude, -111.875066)
+
+        # Checking second tree planted
+        self.assertFalse(result[1][0])
+        self.assertEqual(result[1][1], ObjectDoesNotExist)
+
+        # Checking third tree planted
+        self.assertTrue(result[2][0])
+        self.assertEqual(result[2][1].tree.name, 'Oak Tree')
+        self.assertEqual(result[2][1].location.latitude, 37.577240)
+        self.assertEqual(result[2][1].location.longitude, 126.977022)
