@@ -1,3 +1,6 @@
+"""
+Django models for Tree app.
+"""
 from django.db import models
 
 
