@@ -51,6 +51,12 @@ class ModelTests(TestCase):
         self.assertEqual(result[1].location.latitude, 40.744801)
         self.assertEqual(result[1].location.longitude, -111.875066)
 
+        # Check that the user ha the tree linked in DB
+        user_trees = [tree for tree in self.user.user_trees.all()]
+
+        self.assertTrue(user_trees)
+        self.assertEqual(len(user_trees), 1)
+
     def test_successful_multiple_planted_trees(self):
         """Test successful multiple PlantedTree."""
         trees_for_planting = [
@@ -77,6 +83,12 @@ class ModelTests(TestCase):
         self.assertEqual(result[2][1].tree.name, 'Oak Tree')
         self.assertEqual(result[2][1].location.latitude, 37.577240)
         self.assertEqual(result[2][1].location.longitude, 126.977022)
+
+        # Check that the user has the trees linked in DB
+        user_trees = [tree for tree in self.user.user_trees.all()]
+
+        self.assertTrue(user_trees)
+        self.assertEqual(len(user_trees), 3)
 
     def test_partial_success_multiple_planted_trees(self):
         """Test partial success multiple PlantedTree."""
