@@ -18,6 +18,12 @@ class ModelTests(TestCase):
             name='Test User',
             user_about='User'
         )
+        self.user_2 = get_user_model().objects.create_user(
+            email='user-2@example.com',
+            password='testpass123',
+            name='Test User 2',
+            user_about='User 2'
+        )
 
     def test_create_account_successful(self):
         """Test creating an Account is successful."""
@@ -60,8 +66,11 @@ class ModelTests(TestCase):
         account = Account.objects.create(
             name=name,
         )
-        account.members.set([self.user])
+        account.members.set([self.user, self.user_2])
 
         result = account.remove_member(self.user)
+        members = account.members.all()
 
         self.assertTrue(result[0], True)
+        self.assertEqual(result[1].email, self.user.email)
+        self.assertEqual(members[0].email, self.user_2.email)
