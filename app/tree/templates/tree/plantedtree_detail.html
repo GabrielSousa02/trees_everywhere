@@ -1,0 +1,22 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+
+    <h1>PLANTED TREE DETAILS</h1>
+    <td><a href="/trees/planted_tree_update/{{ trees_list.id }}"><button class="normal-btn">Edit</button></a></td>
+
+    {# PLANTED TREE'S NAME #}
+    <div class="detail_container">
+        <h3 class="detail_label">PLANTED TREE'S NAME</h3>
+        <p class="detail_data">{{ trees_list.tree.name }}</p>
+    </div>
+    <hr>
+
+    {# PLANTED TREE'S SURNAME #}
+    <div class="detail_container">
+        <h3 class="detail_label">PLANTED TREE'S AGE</h3>
+        <p class="detail_data">{{ trees_list..age }}</p>
+    </div>
+    <hr>
+
+{% endblock %}

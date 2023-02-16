@@ -2,7 +2,6 @@
 
 # Trees Everywhere
 
-
 ## Django practicing project
 
 ### Requirements

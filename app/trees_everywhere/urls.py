@@ -28,7 +28,12 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name='api-schema'),
         name='api-docs',
     ),
-    path('users/', include('django.contrib.auth.urls')),
-    path('api/planted_trees', include(('tree.urls', 'tree'),
-                                      namespace='planted_trees')),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path(
+        'trees/',
+        include(
+            ('tree.urls', 'tree'),
+            namespace='trees'
+        )
+    ),
 ]
