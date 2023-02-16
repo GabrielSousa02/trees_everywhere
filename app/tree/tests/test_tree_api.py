@@ -13,7 +13,7 @@ from tree.models import Tree, PlantedTree
 from tree.serializers import PlantedTreeSerializer
 
 
-TREES_URL = reverse('planted_trees:planted-tree-list')
+TREES_URL = reverse('trees:planted-tree-list')
 
 
 class TreeAPITests(TestCase):
