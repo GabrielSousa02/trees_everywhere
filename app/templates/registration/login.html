@@ -1,0 +1,34 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+    
+<h1>Hi there... &#128075;</h1>
+<h2>and welcome to the <i>Trees Everywhere</i> project</h2>
+
+{% if form.erros %}
+	<p>Your username or password was incorrect. Try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+        <p>You don't have permission to view this page.</p>
+    {% else %}
+        <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+   
+    {% csrf_token %}
+    {{ form.username.label_tag }}
+    {{ form.username }}
+
+    {{ form.password.labe_tag }}
+    {{ form.password }}
+
+    <input type="submit" value="login">
+    <input type="hidden" name="text" value="{{ next }}">
+</form>
+
+{% endblock %}
