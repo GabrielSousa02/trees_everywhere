@@ -9,7 +9,6 @@ from django.views.generic import (
     ListView,
     DetailView,
     UpdateView,
-    DeleteView,
 )
 from rest_framework.generics import ListAPIView
 from rest_framework.authentication import (
